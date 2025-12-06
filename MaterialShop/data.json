@@ -1,0 +1,55 @@
+[
+  {
+    "name": "高数IB",
+    "base_price": 1.5,
+    "resources": {
+      "2024": "https://pan.baidu.com/math_2024",
+      "2023": "https://pan.baidu.com/math_2023",
+      "2022": "https://pan.baidu.com/math_2022"
+    },
+    "discount_threshold": 3,
+    "discount_rate": 0.9
+  },
+  {
+    "name": "线性代数",
+    "base_price": 1.0,
+    "resources": {
+      "2025": "https://pan.baidu.com/linalg_2025",
+      "2024": "https://pan.baidu.com/linalg_2024"
+    },
+    "discount_threshold": 0,
+    "discount_rate": 1.0
+  },
+  {
+    "name": "C++程序设计",
+    "base_price": 2.0,
+    "resources": {
+      "2024": "https://pan.baidu.com/cpp_2024",
+      "2023": "https://pan.baidu.com/cpp_2023"
+    },
+    "discount_threshold": 2,
+    "discount_rate": 0.8
+  },
+  {
+    "name": "概率论与数理统计",
+    "base_price": 1.2,
+    "resources": {
+      "2025": "https://pan.baidu.com/gll_2025",
+      "2024": "https://pan.baidu.com/gll_2024",
+      "2023": "https://pan.baidu.com/gll_2023"
+    },
+    "discount_threshold": 1,
+    "discount_rate": 0.9
+  },
+  {
+    "name": "数据结构与算法",
+    "base_price": 2.5,
+    "resources": {
+      "2023": "https://pan.baidu.com/dsa_2023",
+      "2022": "https://pan.baidu.com/dsa_2022"
+    },
+    "discount_threshold": 2,
+    "discount_rate": 0.85
+  }
+
+]
