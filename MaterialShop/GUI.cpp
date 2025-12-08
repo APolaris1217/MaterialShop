@@ -1,3 +1,4 @@
+#define _HAS_STD_BYTE 0 
 #include "GUI.h"
 #include <algorithm> 
 #include <conio.h>
@@ -304,6 +305,7 @@ void GUI::render() {
     payButton.draw(false);
 
     // 6. 绘制最右侧折扣信息栏 (不变)
+    // ... (保持不变)
     int infoX = 950;
     int infoY = 60;
     int infoW = 280;

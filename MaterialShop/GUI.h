@@ -8,6 +8,7 @@
 using namespace std;
 
 struct Button {
+    // ... (Button 结构体保持不变)
     int x, y, w, h;
     string text;
     COLORREF color;
