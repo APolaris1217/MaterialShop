@@ -34,6 +34,7 @@ ShopSystem::ShopSystem() {
     currentSelection = nullptr;
     isPaid = false;
     currentPaymentMethod = nullptr;
+    lastPaidAmount = 0.0;
 
     // >>> 支付功能初始化：初始化所有支付方式 (解决 LNK2005 冲突的方法定义)
     availablePayments.push_back(new Alipay());
@@ -152,24 +153,36 @@ double ShopSystem::getTotalPrice() {
     return total;
 }
 
-// >>> 新增：设置选中的支付方式 (解决 LNK2005 冲突的方法定义)
+// 新增：根据当前选中支付方式计算最终应付金额（含手续费或折扣）
+double ShopSystem::getTotalPriceWithPayment() {
+    double base = getTotalPrice();
+    if (currentPaymentMethod) {
+        return currentPaymentMethod->adjustAmount(base);
+    }
+    return base;
+}
+
+// >>> 新增/修改：设置选中的支付方式 (解决 LNK2005 冲突的方法定义)
 void ShopSystem::setPaymentMethod(int index) {
     if (index >= 0 && index < availablePayments.size()) {
         currentPaymentMethod = availablePayments[index];
     }
 }
 
-// >>> 修改：支付逻辑 (现在依赖 currentPaymentMethod，解决 LNK2005 冲突的方法定义)
+// >>> 修改：支付逻辑 (现在依赖 currentPaymentMethod，传入已调整后的金额)
 bool ShopSystem::pay() {
-    double price = getTotalPrice();
+    double basePrice = getTotalPrice();
     if (shoppingCart.empty()) return false;
     if (!currentPaymentMethod) return false; // 必须选择支付方式
 
-    // 调用多态的 pay 接口
-    bool success = currentPaymentMethod->pay(price);
+    double finalAmount = currentPaymentMethod->adjustAmount(basePrice);
+
+    // 调用多态的 pay 接口，传入最终应付金额
+    bool success = currentPaymentMethod->pay(finalAmount);
 
     if (success) {
         isPaid = true;
+        lastPaidAmount = finalAmount;
         return true;
     }
     return false;
@@ -194,9 +207,9 @@ string ShopSystem::getDeliverMessage() {
         msg += "----------------------\n";
     }
 
-    // 新增支付信息
+    // 新增支付信息：使用 lastPaidAmount（记录支付时的实际金额）
     char buf[128];
-    sprintf_s(buf, "最终实付: %.2f 元\n", getTotalPrice());
+    sprintf_s(buf, "最终实付: %.2f 元\n", lastPaidAmount);
     msg += "支付方式: " + currentPaymentMethod->getName() + "\n";
     msg += string(buf);
     msg += "======================\n";
@@ -208,4 +221,5 @@ string ShopSystem::getDeliverMessage() {
 void ShopSystem::clearCart() {
     shoppingCart.clear(); // 清空 map，价格自然归零
     isPaid = false;       // 重置支付状态
+    lastPaidAmount = 0.0;
 }

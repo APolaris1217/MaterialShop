@@ -5,6 +5,13 @@
 #include <iostream>
 #include <string>
 #include <cmath> // 引入 cmath 用于 ceil
+#include <sstream>
+
+// 全局布局配置：方便统一调整 GUI 拉长与日志区高度
+static const int kBottomLogHeight = 420; // 日志区高度（增大以“往下”）
+static const int kMinWindowHeight = 800;
+static const int kTopAreaExtra = 80; // 顶部/中部额外保留空间，避免控件覆盖
+static const int kLogTopShift = 50; // 日志区上界向下偏移（正值会把日志区上界下移）
 
 GUI::GUI(ShopSystem* s) : shop(s) {
     isRunning = true;
@@ -15,9 +22,11 @@ GUI::GUI(ShopSystem* s) : shop(s) {
 // 初始化界面
 // ==========================================
 void GUI::init() {
-    // 1. 动态计算窗口高度
+    // 1. 动态计算窗口高度（确保包含左侧项、支付区与底部日志区）
     int count = (int)shop->getMaterials().size();
-    int winH = max(800, 100 + count * 60 + 400);
+    // 基于项目数量计算内容区域高度，并确保至少能容纳底部日志区
+    int contentH = 100 + count * 60 + kTopAreaExtra;
+    int winH = max(kMinWindowHeight, contentH + kBottomLogHeight);
 
     // 2. 初始化大窗口
     initgraph(1280, winH);
@@ -33,10 +42,12 @@ void GUI::init() {
     }
 
     // 使用统一变量表示底部日志区高度，便于后续布局计算（增强健壮性）
-    const int bottomLogHeight = 300;
+    const int bottomLogHeight = kBottomLogHeight;
+    // 计算日志区上界（上界下移 kLogTopShift 像素）
+    int logTop = getheight() - bottomLogHeight + kLogTopShift;
 
     // 关键修改：Pay Button Y 坐标基于窗口高度和底部日志区计算，避免硬编码导致的覆盖
-    int fixed_payButton_y = getheight() - bottomLogHeight - 120; // 保留上方 120px 空间用于价格/支付区
+    int fixed_payButton_y = logTop - 120; // 保留上方 120px 空间用于价格/支付区
 
     // 5. 初始化确认支付按钮 
     payButton = { 600, fixed_payButton_y, 300, 60, "确认支付 (Pay)", RGB(34, 139, 34), 0 };
@@ -232,7 +243,11 @@ void GUI::render() {
     cleardevice();
 
     // 统一使用变量表示底部日志区高度，避免硬编码
-    const int bottomLogHeight = 300;
+    const int bottomLogHeight = kBottomLogHeight;
+    // 计算日志区上界（上界下移 kLogTopShift 像素）
+    int h = getheight();
+    int w = getwidth();
+    int logTop = h - bottomLogHeight + kLogTopShift;
 
     // 1. 绘制顶部标题 
     settextcolor(BLACK);
@@ -311,8 +326,8 @@ void GUI::render() {
     int infoW = 280;
 
     setfillcolor(RGB(235, 235, 235));
-    // 使用 bottomLogHeight 避免覆盖底部日志区
-    solidrectangle(infoX, 50, infoX + infoW, getheight() - bottomLogHeight - 20);
+    // 使用 logTop 避免覆盖底部日志区（将原来 getheight()-bottomLogHeight 替换为 logTop）
+    solidrectangle(infoX, 50, infoX + infoW, logTop - 20);
 
     setbkmode(TRANSPARENT);
     int currentY = infoY;
@@ -350,12 +365,16 @@ void GUI::render() {
     // 列出所有支付方式及其政策
     auto payments = shop->getAvailablePayments();
     settextstyle(16, 0, "Consolas");
+    int policyMaxW = infoW - 20; // 文本可用宽度（左右各留 10px）
+    int lineGap = 18;            // 政策行高（像素），根据字体大小微调
     for (auto p : payments) {
         string line = p->getName() + string(" - ") + p->getPolicy();
         outtextxy(infoX + 10, currentY, line.c_str());
         currentY += 22;
-        if (currentY > getheight() - bottomLogHeight - 40) break; // 防止越界覆盖日志区
+        if (currentY > logTop - 40) break; // 防止越界覆盖日志区（使用 logTop）
     }
+
+PAYMENT_DRAW_DONE: ;
 
     // 6.5 绘制购物车面板（在左侧科目下方，靠近底部日志区之上）
     {
@@ -364,7 +383,7 @@ void GUI::render() {
         int cartH = 170;
 
         // 计算安全的 cartY：不应覆盖左侧的最后一个科目按钮，也不应进入日志区
-        int defaultCartY = getheight() - bottomLogHeight - cartH - 10; // 在日志区之上留 10px 间隔
+        int defaultCartY = logTop - cartH - 10; // 在日志区之上留 10px 间隔（使用 logTop）
 
         int cartY = defaultCartY;
         if (!itemButtons.empty()) {
@@ -373,8 +392,8 @@ void GUI::render() {
             // 如果最后一个科目按钮底部距离默认 cartY 太近，则把 cartY 向下移动，保证间隙
             cartY = max(defaultCartY, lastItemBottom + 10);
             // 如果移动后 cartY 会进入日志区（即超出 allowed area），则调整 cartH 以适配
-            if (cartY + cartH > getheight() - bottomLogHeight - 5) {
-                cartH = max(60, (getheight() - bottomLogHeight - 5) - cartY); // 最小高度 60
+            if (cartY + cartH > logTop - 5) {
+                cartH = max(60, (logTop - 5) - cartY); // 最小高度 60
             }
         }
 
@@ -421,16 +440,13 @@ void GUI::render() {
         }
     }
 
-    // 7. 绘制底部日志区（使用变量避免硬编码）
-    int h = getheight();
-    int w = getwidth();
-
+    // 7. 绘制底部日志区（使用 logTop 作为上界，避免硬编码）
     setfillcolor(RGB(30, 30, 30));
-    fillrectangle(0, h - bottomLogHeight, w, h);
+    fillrectangle(0, logTop, w, h);
 
     settextcolor(GREEN);
     settextstyle(18, 0, "Consolas");
-    RECT r = { 20, h - bottomLogHeight + 10, w - 20, h - 10 };
+    RECT r = { 20, logTop + 10, w - 20, h - 10 };
     drawtext(statusMsg.c_str(), &r, DT_LEFT | DT_WORDBREAK);
 
     // 8. 提交绘制
