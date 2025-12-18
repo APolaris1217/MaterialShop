@@ -1,7 +1,7 @@
 #pragma once
 #define _HAS_STD_BYTE 0 
 #include "Material.h"
-#include "Payment.h" // <<< 新增：引入 Payment.h
+#include "Payment.h" 
 #include <vector>
 #include <string>
 #include <set>
@@ -22,7 +22,7 @@ private:
 
     vector<PaymentMethod*> availablePayments;
 
-    // 新增：记录上次支付的实际支付金额（用于发货单显示）
+    // 记录上次支付的实际支付金额（用于发货单显示）
     double lastPaidAmount = 0.0;
 
 public:
@@ -46,10 +46,10 @@ public:
     // 计算购物车总价（遍历 map）
     double getTotalPrice();
 
-    // 新增：计算在选中支付方式下的最终应付金额（含手续费/折扣）
+    // 计算在选中支付方式下的最终应付金额（含手续费/折扣）
     double getTotalPriceWithPayment();
 
-    // >>> 修改：支付逻辑 (现在不需要 inputMoney，依赖选中的方式)
+    // 支付逻辑 (现在不需要 inputMoney，依赖选中的方式)
     bool pay();
 
     // 设置选中的支付方式

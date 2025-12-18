@@ -2,7 +2,7 @@
 #define _HAS_STD_BYTE 0 
 #include <string>
 #include <vector>
-#include <map> // 必须包含
+#include <map> 
 #include<algorithm>
 using namespace std;
 
@@ -10,7 +10,7 @@ class Material {
 protected:
     string name;
     double basePrice;
-    // 修改核心：存储 年份 -> 链接 的映射
+    // 存储 年份 -> 链接 的映射
     map<int, string> yearResources;
 
 public:
@@ -21,14 +21,14 @@ public:
 
     virtual double calculatePrice(int count) = 0;
 
-    // 修改接口：根据年份获取链接
+    // 根据年份获取链接
     virtual string getLinkByYear(int year) = 0;
     virtual string getDiscountRule() = 0;
 
     string getName() const { return name; }
     double getBasePrice() const { return basePrice; }
 
-    // 辅助函数：提取所有年份给GUI生成按钮用
+    // 提取所有年份给GUI生成按钮用
     vector<int> getAvailableYears() const {
         vector<int> years;
         // 遍历 map，把 key (年份) 存入 vector

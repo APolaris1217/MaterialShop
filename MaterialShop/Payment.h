@@ -23,7 +23,7 @@ public:
     // 返回该支付方式对应的优惠/手续费说明（用于 UI 显示）
     virtual string getPolicy() const { return string("(无)"); }
 
-    // 新增：根据支付方式计算最终应付金额（含手续费或折扣）
+    // 根据支付方式计算最终应付金额（含手续费或折扣）
     // 默认行为是不改变金额
     virtual double adjustAmount(double amount) const { return amount; }
 
@@ -51,7 +51,7 @@ public:
         return false;
     }
 
-    // 调整金额：加 5% 手续费
+    // 加 5% 手续费
     double adjustAmount(double amount) const override {
         return amount + amount * 0.05;
     }

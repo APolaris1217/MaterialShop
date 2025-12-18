@@ -5,12 +5,12 @@
 #include <nlohmann/json.hpp>
 #include <Windows.h> 
 #include "Material.h" // 需要引入 Material.h 才能使用 JsonConfiguredMaterial
-#include <iomanip> // 用于 cout 输出
+#include <iomanip>
 
 using json = nlohmann::json;
 
 // ==========================================
-// 辅助函数：UTF-8 转 GBK (防止中文乱码)
+// UTF-8 转 GBK (防止中文乱码)
 // ==========================================
 string Utf8ToGbk(const string& str) {
     if (str.empty()) return "";
@@ -153,7 +153,7 @@ double ShopSystem::getTotalPrice() {
     return total;
 }
 
-// 新增：根据当前选中支付方式计算最终应付金额（含手续费或折扣）
+// 根据当前选中支付方式计算最终应付金额（含手续费或折扣）
 double ShopSystem::getTotalPriceWithPayment() {
     double base = getTotalPrice();
     if (currentPaymentMethod) {
@@ -162,14 +162,14 @@ double ShopSystem::getTotalPriceWithPayment() {
     return base;
 }
 
-// >>> 新增/修改：设置选中的支付方式 (解决 LNK2005 冲突的方法定义)
+// 设置选中的支付方式
 void ShopSystem::setPaymentMethod(int index) {
     if (index >= 0 && index < availablePayments.size()) {
         currentPaymentMethod = availablePayments[index];
     }
 }
 
-// >>> 修改：支付逻辑 (现在依赖 currentPaymentMethod，传入已调整后的金额)
+// 支付逻辑 (现在依赖 currentPaymentMethod，传入已调整后的金额)
 bool ShopSystem::pay() {
     double basePrice = getTotalPrice();
     if (shoppingCart.empty()) return false;
@@ -214,7 +214,7 @@ string ShopSystem::getDeliverMessage() {
     msg += string(buf);
     msg += "======================\n";
 
-    // 注意：getDeliverMessage 负责返回处理好的字符串，UI负责在正确的编码环境下显示
+    // getDeliverMessage 负责返回处理好的字符串，UI负责在正确的编码环境下显示
     return msg;
 }
 

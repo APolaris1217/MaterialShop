@@ -64,7 +64,7 @@ void GUI::initPaymentButtons() {
     paymentButtons.clear();
 
     auto payments = shop->getAvailablePayments();
-    // 将年份列整体向左移动 80 像素（从 600 -> 520）以靠近科目列表
+    // 将年份列整体向左移动 80 像素
     int startX = 600;
 
     int btnW = 100;
@@ -77,9 +77,6 @@ void GUI::initPaymentButtons() {
     // 2. 反推 startY: 这是支付按钮区域的起始Y坐标
     // payButton.y = startY + paymentRows * (btnH + gap) + 间隔
 
-    // **********************************************
-    // 关键修改：提取和修改间隔值
-    // **********************************************
     int verticalGap = 90;
 
     int startY = payButton.y - verticalGap - paymentRows * (btnH + gap);
@@ -100,7 +97,7 @@ void GUI::initPaymentButtons() {
 
 
 // ==========================================
-// 辅助函数：刷新右侧年份按钮 (不变)
+// 刷新右侧年份按钮
 // ==========================================
 void GUI::refreshYearButtons() {
     yearButtons.clear();
@@ -182,7 +179,7 @@ void GUI::update() {
                         std::cout << "========================================" << endl;
 
                         // ====================================================
-                        // ★★★ 新增：5秒倒计时逻辑 ★★★
+                        // 5秒倒计时逻辑
                         // ====================================================
                         for (int i = 5; i >= 1; i--) {
                             // 动态更新状态栏：显示收据 + 倒计时提示
@@ -255,7 +252,7 @@ void GUI::render() {
     outtextxy(50, 15, "科目列表 (购物车)");
     outtextxy(600, 15, "年份配置");
 
-    // 关键修改：将 支付方式标题 的 Y 坐标基于计算出的 paymentButtons[0].y
+    // 将 支付方式标题 的 Y 坐标基于计算出的 paymentButtons[0].y
     int paymentTitleY = 340;
     if (!paymentButtons.empty()) {
         // 将标题放在第一个支付按钮的上方 40px 处
@@ -320,7 +317,6 @@ void GUI::render() {
     payButton.draw(false);
 
     // 6. 绘制最右侧折扣信息栏 (不变)
-    // ... (保持不变)
     int infoX = 950;
     int infoY = 60;
     int infoW = 280;

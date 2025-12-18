@@ -31,7 +31,6 @@ string JsonConfiguredMaterial::getDiscountRule() {
     string msg = "满 " + to_string(discountThreshold) + " 年 (" + rateStr + " Price)";
 
     // 或者简单点：满 3 年 9 折
-    // 注意：这里 to_string 可能会带小数点，简单处理如下：
     int discountInt = (int)(discountRate * 10); // 0.9 -> 9
     return "满 " + to_string(discountThreshold) + " 年享 " + to_string(discountInt) + " 折";
 }
